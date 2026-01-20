@@ -1,8 +1,6 @@
-﻿using BookingSystem.Domain.Enums;
+﻿namespace BookingSystem.Domain.Entities;
 
-namespace BookingSystem.Domain.Entities;
-
-public class User
+public class Client
 {
     public int Id { get; set; }
 
@@ -13,8 +11,4 @@ public class User
     public string? Patronymic { get; set; }
 
     public string Email { get; set; } = null!;
-
-    public string PasswordHash { get; set; } = null!;
-
-    public RoleType Role { get; set; }
 }

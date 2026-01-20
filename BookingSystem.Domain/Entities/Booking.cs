@@ -14,5 +14,5 @@ public class Booking
 
     public Room Room { get; set; } = null!;
 
-    public User User { get; set; } = null!;
+    public Client User { get; set; } = null!;
 }

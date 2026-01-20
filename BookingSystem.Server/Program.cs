@@ -1,4 +1,8 @@
+using BookingSystem.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddNpgsqlDbContext<AppDbContext>("postgres");
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
