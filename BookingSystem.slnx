@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="BookingSystem.AppHost/BookingSystem.AppHost.csproj" />
+  <Project Path="BookingSystem.Application/BookingSystem.Application.csproj" Id="237e36e9-4fb2-4013-a19c-9d7db7a8fa54" />
+  <Project Path="BookingSystem.Domain/BookingSystem.Domain.csproj" />
+  <Project Path="BookingSystem.Infrastructure/BookingSystem.Infrastructure.csproj" Id="76ae4518-87d6-445a-b9e1-c7a5eccc9b3d" />
+  <Project Path="BookingSystem.Server/BookingSystem.Server.csproj" />
+  <Project Path="frontend/frontend.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+</Solution>
