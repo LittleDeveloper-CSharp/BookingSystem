@@ -1,14 +1,20 @@
 ﻿using BookingSystem.Application.Intefraces;
 using BookingSystem.Application.Models.Bookings;
+using BookingSystem.Infrastructure.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingSystem.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class BookingsController(IBookingService bookingService) : ControllerBase
+[Authorize]
+public class BookingsController(IBookingService bookingService, UserManager<User> userManager) : ControllerBase
 {
     private readonly IBookingService _bookingService = bookingService;
+
+    private readonly UserManager<User> _userManager = userManager;
 
     [HttpPost("{roomId:int}")]
     public async Task<IActionResult> Create(
@@ -16,6 +22,7 @@ public class BookingsController(IBookingService bookingService) : ControllerBase
         [FromBody] CreateBookingDto createBookingDto,
         CancellationToken cancellationToken = default)
     {
+        var user = await _userManager.GetUserAsync(User);
         var id = _bookingService.CreateBookingAsync(
             0, roomId, createBookingDto, cancellationToken);
 

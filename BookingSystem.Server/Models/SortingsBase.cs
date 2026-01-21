@@ -1,5 +1,4 @@
-﻿using BookingSystem.Domain.Entities;
-using BookingSystem.Domain.Enums;
+﻿using BookingSystem.Domain.Enums;
 using System.Linq.Expressions;
 
 namespace BookingSystem.Server.Models;
@@ -10,5 +9,5 @@ public abstract record SortingsBase<T>
 
     public required SortingType SotringType { get; init; }
 
-    public abstract Expression<Func<T>> GetSorting();
+    public abstract Expression<Func<T, object>> GetSorting();
 }

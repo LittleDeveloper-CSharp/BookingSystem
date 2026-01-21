@@ -1,9 +1,9 @@
-﻿namespace BookingSystem.Domain.Entities;
+﻿using BookingSystem.Domain.Abstractions;
 
-public class Client
+namespace BookingSystem.Domain.Entities;
+
+public class Client : EntityBase
 {
-    public int Id { get; set; }
-
     public string FirstName { get; set; } = null!;
 
     public string LastName { get; set; } = null!;

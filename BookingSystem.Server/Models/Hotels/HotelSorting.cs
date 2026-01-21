@@ -5,7 +5,7 @@ namespace BookingSystem.Server.Models.Hotels;
 
 public sealed record HotelSorting : SortingsBase<Hotel>
 {
-    public override Expression<Func<Hotel>> GetSorting()
+    public override Expression<Func<Hotel, object>> GetSorting()
     {
         throw new NotImplementedException();
     }

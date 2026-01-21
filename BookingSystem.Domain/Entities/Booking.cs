@@ -1,9 +1,9 @@
-﻿namespace BookingSystem.Domain.Entities;
+﻿using BookingSystem.Domain.Abstractions;
 
-public class Booking
+namespace BookingSystem.Domain.Entities;
+
+public class Booking : EntityBase
 {
-    public int Id { get; set; }
-
     public DateOnly StartDate { get; set; }
 
     public DateOnly EndDate { get; set; }

@@ -1,9 +1,9 @@
-﻿namespace BookingSystem.Domain.Entities;
+﻿using BookingSystem.Domain.Abstractions;
 
-public class Hotel
+namespace BookingSystem.Domain.Entities;
+
+public class Hotel : EntityBase
 {
-    public int Id { get; set; }
-
     public string Address { get; set; } = null!;
 
     public string City { get; set; } = null!;

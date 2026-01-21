@@ -9,5 +9,5 @@ public record FilterSortingBase<T>
 
     public required SortingType? SotringType { get; init; }
 
-    public required Expression<Func<T>>? PropertySort { get; init; }
+    public required Expression<Func<T, object>>? PropertySort { get; init; }
 }

@@ -1,17 +1,22 @@
 ﻿using BookingSystem.Application.Intefraces;
 using BookingSystem.Application.Models.FilterSortings;
 using BookingSystem.Application.Models.Rooms;
+using BookingSystem.Domain.Entities;
+using BookingSystem.Infrastructure.Interfaces;
+using BookingSystem.Infrastructure.Models.Reports;
 using BookingSystem.Server.Models.Rooms;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 namespace BookingSystem.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class RoomsController(IRoomService roomService) : ControllerBase
+public class RoomsController(IRoomService roomService, IReportService<RoomStatisticDto, Room> reportService) : ControllerBase
 {
     private readonly IRoomService _roomService = roomService;
+
+    private readonly IReportService<RoomStatisticDto, Room> _reportService = reportService;
 
     [HttpGet("/api/hotels/{hotelId:int}/rooms")]
     public async Task<IActionResult> Get(
@@ -28,14 +33,15 @@ public class RoomsController(IRoomService roomService) : ControllerBase
         };
 
         var response = await _roomService.GetRoomCartsAsync(
-            hotelId, 
-            filter, 
+            hotelId,
+            filter,
             cancellationToken);
 
         return Ok(response);
     }
 
     [HttpPost("/api/hotels/{hotelId:int}/rooms")]
+    [Authorize(Roles = "Employee")]
     public async Task<IActionResult> Create(
         [FromRoute] int hotelId,
         [FromBody] CreateRoomDto createRoomDto,
@@ -47,6 +53,7 @@ public class RoomsController(IRoomService roomService) : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Employee")]
     public async Task<IActionResult> Delete(
         [FromRoute] int id,
         CancellationToken cancellationToken = default)
@@ -57,6 +64,7 @@ public class RoomsController(IRoomService roomService) : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Employee")]
     public async Task<IActionResult> Update(
         [FromRoute] int id,
         [FromBody] UpdateRoomDto updateRoomDto,
@@ -65,5 +73,27 @@ public class RoomsController(IRoomService roomService) : ControllerBase
         await _roomService.UpdateRoomAsync(id, updateRoomDto, cancellationToken);
 
         return NoContent();
+    }
+
+    [HttpGet("report")]
+    [Authorize(Roles = "Employee")]
+    public async Task<IActionResult> GetReport(
+    [FromQuery] RoomFilters? roomFilters = null,
+    CancellationToken cancellationToken = default)
+    {
+        var filter = new RoomFilterSortingDto
+        {
+            Filters = roomFilters?.GetFilters(),
+            PropertySort = null,
+            SotringType = null
+        };
+
+        var report = await _reportService.GetReportAsync(x => new RoomStatisticDto
+        {
+            CountBooking = x.Bookings.Count,
+            Name = x.Name
+        }, filter, cancellationToken);
+
+        return File(report, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Report.xlsx");
     }
 }

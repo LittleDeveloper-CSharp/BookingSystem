@@ -1,16 +1,24 @@
 ﻿using BookingSystem.Application.Intefraces;
 using BookingSystem.Application.Models.FilterSortings;
 using BookingSystem.Application.Models.Hotels;
+using BookingSystem.Domain.Entities;
+using BookingSystem.Infrastructure.Interfaces;
+using BookingSystem.Infrastructure.Models.Reports;
 using BookingSystem.Server.Models.Hotels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingSystem.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class HotelsController(IHotelService hotelService) : ControllerBase
+public class HotelsController(
+    IHotelService hotelService,
+    IReportService<HotelStatisticDto, Hotel> reportService) : ControllerBase
 {
     private readonly IHotelService _hotelService = hotelService;
+
+    private readonly IReportService<HotelStatisticDto, Hotel> _reportService = reportService;
 
     [HttpGet]
     public async Task<IActionResult> Get(
@@ -41,6 +49,7 @@ public class HotelsController(IHotelService hotelService) : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Employee")]
     public async Task<IActionResult> Create(
         [FromBody] CreateHotelDto createHotel,
         CancellationToken cancellationToken = default)
@@ -51,6 +60,7 @@ public class HotelsController(IHotelService hotelService) : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Employee")]
     public async Task<IActionResult> Update(
         [FromRoute] int id,
         UpdateHotelDto updateHotel,
@@ -62,6 +72,7 @@ public class HotelsController(IHotelService hotelService) : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Employee")]
     public async Task<IActionResult> Delete(
         [FromRoute] int id,
         CancellationToken cancellationToken = default)
@@ -69,5 +80,27 @@ public class HotelsController(IHotelService hotelService) : ControllerBase
         await _hotelService.DeleteHotelAsync(id, cancellationToken);
 
         return NoContent();
+    }
+
+    [HttpGet("report")]
+    [Authorize(Roles = "Employee")]
+    public async Task<IActionResult> GetReport(
+        [FromQuery] HotelFilters? hotelFilters = null,
+        CancellationToken cancellationToken = default)
+    {
+        var filter = new HotelFilterSortingDto
+        {
+            Filters = hotelFilters?.GetFilters(),
+            PropertySort = null,
+            SotringType = null
+        };
+
+        var report = await _reportService.GetReportAsync(x => new HotelStatisticDto
+        {
+            CountBooking = x.Rooms.Count,
+            Name = x.Name
+        }, filter, cancellationToken);
+
+        return File(report, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Report.xlsx");
     }
 }
