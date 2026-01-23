@@ -1,12 +1,18 @@
-﻿using BookingSystem.Domain.Entities;
-using System.Linq.Expressions;
+﻿using BookingSystem.Domain.Abstractions;
+using BookingSystem.Domain.Entities;
 
 namespace BookingSystem.Server.Models.Hotels;
 
 public sealed record HotelSorting : SortingsBase<Hotel>
 {
-    public override Expression<Func<Hotel, object>> GetSorting()
+    private readonly Dictionary<string, SortBase<Hotel>> _properties = new()
     {
-        throw new NotImplementedException();
+        { "name", new Sort<Hotel, string>((x) => x.Name) },
+        { "rooms", new Sort<Hotel, int>((x) => x.Rooms.Select(x=> x.MaxPerson).Max()) }
+    };
+
+    public override SortBase<Hotel> GetSorting()
+    {
+        return _properties[SortBy];
     }
 }

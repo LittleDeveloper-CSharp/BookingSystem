@@ -17,14 +17,15 @@ public class BookingsController(IBookingService bookingService, UserManager<User
     private readonly UserManager<User> _userManager = userManager;
 
     [HttpPost("{roomId:int}")]
-    public async Task<IActionResult> Create(
+    [Authorize(Roles = "Client")]
+    public async Task<ActionResult<CreateBookingDto>> Create(
         [FromRoute] int roomId,
         [FromBody] CreateBookingDto createBookingDto,
         CancellationToken cancellationToken = default)
     {
         var user = await _userManager.GetUserAsync(User);
         var id = _bookingService.CreateBookingAsync(
-            0, roomId, createBookingDto, cancellationToken);
+            user!.ClientId!.Value, roomId, createBookingDto, cancellationToken);
 
         return CreatedAtAction(nameof(Get), null, new { id });
     }

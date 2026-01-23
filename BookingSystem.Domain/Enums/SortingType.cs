@@ -2,7 +2,7 @@
 
 public enum SortingType
 {
-    Acs,
+    Asc,
 
     Desc
 }

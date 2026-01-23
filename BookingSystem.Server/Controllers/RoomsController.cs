@@ -29,7 +29,7 @@ public class RoomsController(IRoomService roomService, IReportService<RoomStatis
         {
             Filters = filters?.GetFilters(),
             PropertySort = roomSorting?.GetSorting(),
-            SotringType = roomSorting?.SotringType
+            SortingType = roomSorting?.SortOrder
         };
 
         var response = await _roomService.GetRoomCartsAsync(
@@ -85,7 +85,7 @@ public class RoomsController(IRoomService roomService, IReportService<RoomStatis
         {
             Filters = roomFilters?.GetFilters(),
             PropertySort = null,
-            SotringType = null
+            SortingType = null
         };
 
         var report = await _reportService.GetReportAsync(x => new RoomStatisticDto

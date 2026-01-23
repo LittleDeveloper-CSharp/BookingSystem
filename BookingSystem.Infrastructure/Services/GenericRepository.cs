@@ -50,12 +50,9 @@ internal sealed class GenericRepository<T>(AppDbContext appDbContext) : IGeneric
                 foreach (var filter in filters.Filters)
                     query = query.Where(filter);
 
-            if(filters.SotringType  != null 
+            if (filters.SortingType != null
                 && filters.PropertySort != null)
-            {
-                query = filters.SotringType == SortingType.Acs ? query.OrderBy(filters.PropertySort) 
-                    : query.OrderByDescending(filters.PropertySort);
-            }
+                query = filters.PropertySort.SortBy(query, filters.SortingType.Value);
         }
 
         return await query.Select(select)

@@ -10,8 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.8",
+    "jwt-decode": "^4.0.0",
     "react": "^19.2.1",
-    "react-dom": "^19.2.1"
+    "react-bootstrap": "^2.10.10",
+    "react-bootstrap-icons": "^1.11.6",
+    "react-dom": "^19.2.1",
+    "zustand-utils": "^2.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

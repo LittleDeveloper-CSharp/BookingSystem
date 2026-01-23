@@ -1,11 +1,13 @@
 ﻿using BookingSystem.Domain.Entities;
+using BookingSystem.Infrastructure.Configurations;
 using BookingSystem.Infrastructure.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingSystem.Infrastructure;
 
-public sealed class AppDbContext : IdentityDbContext<User>
+public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<User, IdentityRole, string>(options)
 {
     public DbSet<Hotel> Hotels => Set<Hotel>();
 
@@ -14,4 +16,13 @@ public sealed class AppDbContext : IdentityDbContext<User>
     public DbSet<Booking> Bookings => Set<Booking>();
 
     public DbSet<Client> Clients => Set<Client>();
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.ApplyConfiguration(new UserConfiguration());
+        builder.ApplyConfiguration(new RoleConfiguration());
+        builder.ApplyConfiguration(new UserRoleConfiguration());
+
+        base.OnModelCreating(builder);
+    }
 }

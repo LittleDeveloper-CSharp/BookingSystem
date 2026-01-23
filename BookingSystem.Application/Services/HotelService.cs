@@ -15,6 +15,7 @@ internal sealed class HotelService(IUnifOfWork unifOfWork) : IHotelService
     {
         var id = await _genericRepository.CreateAsync(new Hotel
         {
+            City = createHotel.City,
             Address = createHotel.Address,
             Name = createHotel.Name
         }, cancellationToken);

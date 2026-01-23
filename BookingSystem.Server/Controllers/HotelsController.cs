@@ -30,7 +30,7 @@ public class HotelsController(
         {
             Filters = hotelFilters?.GetFilters(),
             PropertySort = sortings?.GetSorting(),
-            SotringType = sortings?.SotringType
+            SortingType = sortings?.SortOrder
         };
 
         var response = await _hotelService.GetHotelCartsAsync(filter, cancellationToken);
@@ -92,7 +92,7 @@ public class HotelsController(
         {
             Filters = hotelFilters?.GetFilters(),
             PropertySort = null,
-            SotringType = null
+            SortingType = null
         };
 
         var report = await _reportService.GetReportAsync(x => new HotelStatisticDto
