@@ -3,14 +3,14 @@ import Row from 'react-bootstrap/Row';
 import type { HotelCartDto } from './models/hotelCartDto';
 import HotelCart from './cart';
 import { useCallback, useEffect, useState } from 'react';
-import HotelHttpClient from '../clients/hotelHttpClient';
 import { Container, Alert, Button } from 'react-bootstrap';
-import type { HotelFilters } from '../clients/models/hotelFilters';
 import HotelFiltersContainer from './filters';
 import { useRoleCheck } from '../hooks/useRoleCheck';
-import type { CreateHotelDto } from './models/createHotelDto';
-import { CreateHotelModal } from './details';
-import { useAuth } from '../context/authContext';
+import { DetailsHotelModal } from './details';
+import type { HotelDetailsDto } from './models/hotelDetailsDto';
+import { RoomsModal } from '../rooms-pages/main';
+import { useHotelClient } from '../clients/useHttpClient';
+import type { HotelFilters } from './models/hotelFilters';
 
 // Дефолтные значения фильтров
 const DEFAULT_FILTERS: HotelFilters = {
@@ -19,20 +19,27 @@ const DEFAULT_FILTERS: HotelFilters = {
 };
 
 function HotelGrid() {
+    const [showRoomsModal, setShowRoomsModal] = useState<boolean>(false);
+    const [hotelId, setHotelId] = useState<number>(0);
+    const [hotelName, setHotelName] = useState<string>('');
+    const [isEditMode, setEditMode] = useState<boolean>(false);
     const { isAdmin } = useRoleCheck();
-    const { user } = useAuth();
     const [hotels, setHotels] = useState<HotelCartDto[]>([]);
     const [filters, setFilters] = useState<HotelFilters>(DEFAULT_FILTERS);
-    const [httpClient] = useState(() => new HotelHttpClient({
-        url: `${import.meta.env.VITE_API_URL}/api`,
-        jwtToken: user?.token || ''
-    }));
-    const [showCreateModal, setShowCreateModal] = useState(false);
+    const httpClient = useHotelClient()!;
 
-    // Функция загрузки отелей с текущими фильтрами
+    const [showCreateModal, setShowDetailsModal] = useState(false);
+
+    const onDetailsClick = (
+        id: number,
+        name: string) => {
+        setHotelId(id);
+        setHotelName(name);
+        setShowRoomsModal(true);
+    }
+
     const fetchHotels = useCallback(async () => {
         try {
-            // Делаем запрос с фильтрами
             const data = await httpClient.getHotelCarts(filters);
             setHotels(data);
 
@@ -41,9 +48,7 @@ function HotelGrid() {
         }
     }, [httpClient, filters]);
 
-    // Загружаем отели при изменении фильтров
     useEffect(() => {
-        // Добавляем небольшую задержку для дебаунса при вводе текста
         const timer = setTimeout(() => {
             fetchHotels();
         }, 300);
@@ -55,15 +60,40 @@ function HotelGrid() {
         setFilters({ ...newFilters });
     };
 
-    // Сброс фильтров
     const handleResetFilters = () => {
         setFilters(DEFAULT_FILTERS);
     };
 
-    const handleCreateHotel = async (hotelData: CreateHotelDto) => {
-        await httpClient.createHotel(hotelData);
+    const handleSubmitHotel = async (
+        id: number | null | undefined,
+        model: HotelDetailsDto,
+        isEditMode: boolean) => {
+
+        setEditMode(false);
+
+        if (isEditMode && id !== null && id !== undefined)
+            await httpClient.updateHotel(id, model);
+        else
+            await httpClient.createHotel(model);
+
         await fetchHotels();
     };
+
+    const onEditClick = (id: number) => {
+        setEditMode(true);
+        setHotelId(id);
+        setShowDetailsModal(true);
+    };
+
+    const onDeleteClick = async (id: number) => {
+        await httpClient.deleteHotel(id);
+
+        await fetchHotels();
+    };
+
+    const onReportClick = async () => {
+        await httpClient.getReport(filters);
+    }
 
     return (
         <Container className="my-4">
@@ -73,8 +103,17 @@ function HotelGrid() {
 
                 {isAdmin && (
                     <Button
+                        variant="info"
+                        onClick={onReportClick}
+                    >
+                        Выгрузить в excel
+                    </Button>
+                )}
+
+                {isAdmin && (
+                    <Button
                         variant="success"
-                        onClick={() => setShowCreateModal(true)}
+                        onClick={() => setShowDetailsModal(true)}
                     >
                         + Добавить отель
                     </Button>
@@ -111,18 +150,30 @@ function HotelGrid() {
                         {hotels.map((model, idx) => (
                             <Col key={idx}>
                                 <HotelCart
-                                    key={idx} id={model.id}
-                                    name={model.name}
-                                    countAvailableRooms={model.countAvailableRooms} />
+                                    key={idx}
+                                    isAdmin={isAdmin}
+                                    model={model}
+                                    onDetailsClick={onDetailsClick}
+                                    onDeleteClick={onDeleteClick}
+                                    onEditClick={onEditClick} />
                             </Col>
                         ))}
                     </Row>
                 )}
 
-            <CreateHotelModal
+            <DetailsHotelModal
                 show={showCreateModal}
-                onHide={() => setShowCreateModal(false)}
-                onCreate={handleCreateHotel}
+                onHide={() => setShowDetailsModal(false)}
+                onSubmit={handleSubmitHotel}
+                httpClient={httpClient}
+                isEditMode={isEditMode}
+                id={hotelId}
+            />
+            <RoomsModal
+                hotelId={hotelId}
+                hotelName={hotelName}
+                show={showRoomsModal}
+                onHide={() => setShowRoomsModal(false)}
             />
         </Container>
     );

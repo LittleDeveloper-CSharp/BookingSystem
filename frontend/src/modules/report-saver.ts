@@ -27,7 +27,7 @@ export const downloadFile = async (
     const blob = await response.blob();
     const urlFile = window.URL.createObjectURL(blob);
 
-    a.href = url;
+    a.href = urlFile;
     a.download = decodeURIComponent(fileName);
     a.click();
 

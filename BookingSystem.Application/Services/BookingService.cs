@@ -16,15 +16,15 @@ internal sealed class BookingService(IUnifOfWork unifOfWork) : IBookingService
         {
             UserId = userId,
             RoomId = roomId,
-            EndDate = createBooking.EndDate,
-            StartDate = createBooking.StartDate,
+            EndDate = DateOnly.FromDateTime(createBooking.EndDate.Date),
+            StartDate = DateOnly.FromDateTime(createBooking.StartDate.Date),
         };
 
-        var id = await _genericRepository.CreateAsync(entity, cancellationToken);
+        await _genericRepository.CreateAsync(entity, cancellationToken);
 
         await _unifOfWork.SaveChangesAsync(cancellationToken);
 
-        return id;
+        return entity.Id;
     }
 
     public async Task DeleteBookingAsync(int bookingId, CancellationToken cancellationToken = default)
@@ -39,13 +39,38 @@ internal sealed class BookingService(IUnifOfWork unifOfWork) : IBookingService
     public async Task<BookingDto> GetBookingAsync(int bookingId, CancellationToken cancellationToken = default)
     {
         var dto = await _genericRepository.GetAsync(bookingId,
-            x => new BookingDto
+            x => new 
             {
-                EndDate = x.EndDate,
-                StartDate = x.StartDate,
+                x.EndDate,
+                x.StartDate,
             },
             cancellationToken);
 
-        return dto;
+        return new BookingDto
+        {
+            EndDate = dto.EndDate.ToDateTime(default),
+            StartDate = dto.StartDate.ToDateTime(default)
+        };
+    }
+
+    public async Task<IReadOnlyCollection<BookingCartDto>> GetBookingsAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        var dtos = await _genericRepository.GetAsync(x => x.UserId == userId, x => new
+        {
+            x.Id,
+            x.EndDate,
+            HotelName = x.Room.Hotel.Name,
+            RoomName = x.Room.Name,
+            x.StartDate
+        }, cancellationToken);
+
+        return dtos.Select(x => new BookingCartDto
+        {
+            EndDate = x.EndDate.ToDateTime(default),
+            HotelName = x.HotelName,
+            Id = x.Id,
+            RoomName = x.RoomName,
+            StartDate = x.StartDate.ToDateTime(default)
+        }).ToList();
     }
 }

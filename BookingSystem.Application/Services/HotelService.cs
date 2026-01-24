@@ -13,16 +13,18 @@ internal sealed class HotelService(IUnifOfWork unifOfWork) : IHotelService
 
     public async Task<int> CreateHotelAsync(CreateHotelDto createHotel, CancellationToken cancellationToken = default)
     {
-        var id = await _genericRepository.CreateAsync(new Hotel
+        var hotel = new Hotel
         {
             City = createHotel.City,
             Address = createHotel.Address,
             Name = createHotel.Name
-        }, cancellationToken);
+        };
+
+        await _genericRepository.CreateAsync(hotel, cancellationToken);
 
         await _unifOfWork.SaveChangesAsync(cancellationToken);
 
-        return id;
+        return hotel.Id;
     }
 
     public async Task DeleteHotelAsync(int id, CancellationToken cancellationToken = default)

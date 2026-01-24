@@ -18,7 +18,7 @@ public class RoomsController(IRoomService roomService, IReportService<RoomStatis
 
     private readonly IReportService<RoomStatisticDto, Room> _reportService = reportService;
 
-    [HttpGet("/api/hotels/{hotelId:int}/rooms")]
+    [HttpGet("~/api/hotels/{hotelId:int}/rooms")]
     public async Task<IActionResult> Get(
         [FromRoute] int hotelId,
         [FromQuery] RoomFilters? filters = null,
@@ -40,16 +40,27 @@ public class RoomsController(IRoomService roomService, IReportService<RoomStatis
         return Ok(response);
     }
 
-    [HttpPost("/api/hotels/{hotelId:int}/rooms")]
+    [HttpGet("{id:int}")]
+    [Authorize(Roles = "Employee")]
+    public async Task<IActionResult> GetDetails(
+        [FromRoute] int id,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await _roomService.GetAsync(id, cancellationToken);
+
+        return Ok(response);
+    }
+
+    [HttpPost("~/api/hotels/{hotelId:int}/rooms")]
     [Authorize(Roles = "Employee")]
     public async Task<IActionResult> Create(
         [FromRoute] int hotelId,
         [FromBody] CreateRoomDto createRoomDto,
         CancellationToken cancellationToken = default)
     {
-        await _roomService.CreateRoomAsync(hotelId, createRoomDto, cancellationToken);
+        var id = await _roomService.CreateRoomAsync(hotelId, createRoomDto, cancellationToken);
 
-        return NoContent();
+        return CreatedAtAction(nameof(GetDetails), new { id }, new { id });
     }
 
     [HttpDelete("{id:int}")]

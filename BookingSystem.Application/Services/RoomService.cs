@@ -13,16 +13,19 @@ internal sealed class RoomService(IUnifOfWork unifOfWork) : IRoomService
 
     public async Task<int> CreateRoomAsync(int hotelId, CreateRoomDto createRoom, CancellationToken cancellationToken = default)
     {
-        var id = await _genericRepository.CreateAsync(new Room
+        var room = new Room
         {
             Description = createRoom.Description,
             Name = createRoom.Name,
             MaxPerson = createRoom.MaxPerson,
-        }, cancellationToken);
+            HotelId = hotelId
+        };
+
+        await _genericRepository.CreateAsync(room, cancellationToken);
 
         await _unifOfWork.SaveChangesAsync(cancellationToken);
 
-        return id;
+        return room.Id;
     }
 
     public async Task DeleteRoomAsync(int id, CancellationToken cancellationToken = default)
@@ -34,8 +37,30 @@ internal sealed class RoomService(IUnifOfWork unifOfWork) : IRoomService
         await _unifOfWork.SaveChangesAsync(cancellationToken);
     }
 
+    public Task<RoomDetailsDto> GetAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return _genericRepository.GetAsync(id, x => new RoomDetailsDto
+        {
+            Description = x.Description,
+            MaxPerson = x.MaxPerson,
+            Name = x.Name,
+        }, cancellationToken);
+    }
+
     public async Task<IReadOnlyCollection<RoomCartDto>> GetRoomCartsAsync(int hotelId, RoomFilterSortingDto? roomFilterSorting = null, CancellationToken cancellationToken = default)
     {
+        roomFilterSorting ??= new RoomFilterSortingDto()
+        {
+            Filters = null,
+            PropertySort = null,
+            SortingType = null
+        };
+
+        roomFilterSorting = roomFilterSorting with
+        {
+            Filters = [.. roomFilterSorting.Filters ?? [], (x) => x.HotelId == hotelId]
+        };
+
         var response = await _genericRepository.GetAsync(
             x => new RoomCartDto
             {

@@ -10,6 +10,9 @@ public interface IRoomService
         RoomFilterSortingDto? roomFilterSorting = null,
         CancellationToken cancellationToken = default);
 
+    Task<RoomDetailsDto> GetAsync(int id,
+        CancellationToken cancellationToken = default);
+
     Task<int> CreateRoomAsync(
         int hotelId,
         CreateRoomDto createRoom,

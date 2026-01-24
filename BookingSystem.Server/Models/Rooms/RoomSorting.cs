@@ -8,7 +8,7 @@ public sealed record RoomSorting : SortingsBase<Room>
     private readonly Dictionary<string, SortBase<Room>> _properties = new()
     {
         { "name", new Sort<Room, string>((x) => x.Name) },
-        { "rooms", new Sort<Room, int>((x) => x.MaxPerson) }
+        { "maxPerson", new Sort<Room, int>((x) => x.MaxPerson) }
     };
 
     public override SortBase<Room> GetSorting()

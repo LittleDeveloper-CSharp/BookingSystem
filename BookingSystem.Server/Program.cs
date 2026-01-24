@@ -7,9 +7,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OfficeOpenXml;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+ExcelPackage.License.SetNonCommercialPersonal("Pavel");
 
 builder.Services.AddInfrastructureLayer();
 builder.Services.AddApplicationLayer();
@@ -90,7 +94,14 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
 
+app.UseFileServer();
+
+app.UseRouting();
+
 app.UseCors();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
@@ -98,9 +109,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapDefaultEndpoints();
-
-app.UseFileServer();
-
 
 app.MapControllers();
 app.Run();

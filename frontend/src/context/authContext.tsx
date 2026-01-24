@@ -12,6 +12,7 @@ interface AuthContextType {
     logout: () => void;
     isLoading: boolean;
     isAuthenticated: boolean;
+    updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,6 +32,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const saved = localStorage.getItem('user');
         return saved ? JSON.parse(saved) : null;
     });
+
+
     const [isLoading, setIsLoading] = useState(false);
 
     const login = async (email: string, password: string) => {
@@ -44,6 +47,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
             setUser(response);
             localStorage.setItem('user', JSON.stringify(response));
+            window.dispatchEvent(new Event('auth-changed'));
         } finally {
             setIsLoading(false);
         }
@@ -52,6 +56,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const logout = () => {
         setUser(null);
         localStorage.removeItem('user');
+        window.dispatchEvent(new Event('auth-changed'));
+    };
+
+    const updateUser = (user: User) => {
+        if (user) {
+            setUser(user);
+            localStorage.setItem('user', JSON.stringify(user));
+        }
     };
 
     return (
@@ -60,7 +72,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             login,
             logout,
             isLoading,
-            isAuthenticated: !!user
+            isAuthenticated: !!user,
+            updateUser
         }}>
             {children}
         </AuthContext.Provider>

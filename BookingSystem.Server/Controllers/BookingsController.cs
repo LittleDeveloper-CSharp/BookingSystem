@@ -9,16 +9,15 @@ namespace BookingSystem.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "Client")]
 public class BookingsController(IBookingService bookingService, UserManager<User> userManager) : ControllerBase
 {
     private readonly IBookingService _bookingService = bookingService;
 
     private readonly UserManager<User> _userManager = userManager;
 
-    [HttpPost("{roomId:int}")]
-    [Authorize(Roles = "Client")]
-    public async Task<ActionResult<CreateBookingDto>> Create(
+    [HttpPost("~/api/rooms/{roomId:int}/[controller]")]
+    public async Task<IActionResult> Create(
         [FromRoute] int roomId,
         [FromBody] CreateBookingDto createBookingDto,
         CancellationToken cancellationToken = default)
@@ -30,12 +29,11 @@ public class BookingsController(IBookingService bookingService, UserManager<User
         return CreatedAtAction(nameof(Get), null, new { id });
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> Get(
-        [FromRoute] int id,
-        CancellationToken cancellationToken = default)
+    [HttpGet]
+    public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
     {
-        var response = await _bookingService.GetBookingAsync(id, cancellationToken);
+        var user = await _userManager.GetUserAsync(User);
+        var response = await _bookingService.GetBookingsAsync(user!.ClientId!.Value, cancellationToken);
 
         return Ok(response);
     }

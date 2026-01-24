@@ -2,7 +2,7 @@
 
 public sealed record CreateBookingDto
 {
-    public required DateOnly StartDate { get; set; }
+    public required DateTimeOffset StartDate { get; init; }
 
-    public required DateOnly EndDate { get; set; }
+    public required DateTimeOffset EndDate { get; init; }
 }

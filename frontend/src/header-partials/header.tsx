@@ -4,6 +4,7 @@ import { PersonCircle, BoxArrowRight, PersonFill } from 'react-bootstrap-icons';
 import AuthModal from './authModal';
 import { useAuth } from '../context/authContext';
 import { useRoleCheck } from '../hooks/useRoleCheck';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
     const [showAuthModal, setShowAuthModal] = useState(false);
@@ -32,7 +33,7 @@ const Header: React.FC = () => {
                         <Nav className="me-auto">
                             <Nav.Link href="/">Главная</Nav.Link>
                             {isClient &&
-                                <Nav.Link href="/bookings">Мои бронирования</Nav.Link>
+                                <Nav.Link as={Link} to="/my-bookings">Мои бронирования</Nav.Link>
                             }
                         </Nav>
 

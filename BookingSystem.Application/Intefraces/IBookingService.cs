@@ -10,6 +10,9 @@ public interface IBookingService
         CreateBookingDto createBooking,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyCollection<BookingCartDto>> GetBookingsAsync(int userId,
+        CancellationToken cancellationToken = default);
+
     Task<BookingDto> GetBookingAsync(
         int bookingId,
         CancellationToken cancellationToken = default);

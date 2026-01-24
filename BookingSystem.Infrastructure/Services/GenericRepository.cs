@@ -12,11 +12,9 @@ internal sealed class GenericRepository<T>(AppDbContext appDbContext) : IGeneric
 {
     private readonly DbSet<T> _set = appDbContext.Set<T>();
 
-    public async Task<int> CreateAsync(T entity, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(T entity, CancellationToken cancellationToken = default)
     {
         await _set.AddAsync(entity, cancellationToken);
-
-        return entity.Id;
     }
 
     public void Delete(T entity)
@@ -56,6 +54,13 @@ internal sealed class GenericRepository<T>(AppDbContext appDbContext) : IGeneric
         }
 
         return await query.Select(select)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<TSelect>> GetAsync<TSelect>(Expression<Func<T, bool>> predicate, Expression<Func<T, TSelect>> select, CancellationToken cancellationToken = default)
+    {
+        return await _set.Where(predicate)
+            .Select(select)
             .ToListAsync(cancellationToken);
     }
 

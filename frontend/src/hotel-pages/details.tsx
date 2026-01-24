@@ -1,24 +1,55 @@
-// components/CreateHotelModal.tsx
-import { useState } from 'react';
-import { Modal, Button, Form, Alert, Spinner } from 'react-bootstrap';
-import type { CreateHotelDto } from './models/createHotelDto';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert, Button, Form, Modal, Spinner } from 'react-bootstrap';
+import type HotelHttpClient from '../clients/hotelHttpClient';
+import type { HotelDetailsDto } from './models/hotelDetailsDto';
 
-interface CreateHotelModalProps {
+interface DetailsHotelModalProps {
+    id?: null | number | undefined;
+    isEditMode: boolean;
     show: boolean;
     onHide: () => void;
-    onCreate: (hotelData: CreateHotelDto) => Promise<void>;
+    onSubmit: (id: number | null | undefined,
+        model: HotelDetailsDto,
+        isEditMode: boolean) => Promise<void>;
+    httpClient: HotelHttpClient;
 }
 
-export const CreateHotelModal: React.FC<CreateHotelModalProps> = ({
+export const DetailsHotelModal: React.FC<DetailsHotelModalProps> = ({
+    id,
+    isEditMode,
     show,
     onHide,
-    onCreate
+    onSubmit,
+    httpClient
 }) => {
-    const [formData, setFormData] = useState<CreateHotelDto>({
+    const [formData, setFormData] = useState<HotelDetailsDto>({
         name: '',
         address: '',
         city: ''
     });
+
+    const fetchHotel = useCallback(async () => {
+        try {
+            if (isEditMode && id !== null) {
+                const hotelData = await httpClient.getHotelDetails(id as number);
+
+                setFormData(hotelData);
+            }
+        } catch (err) {
+            console.error('Ошибка при загрузке отелей:', err);
+        }
+    }, [httpClient, id, isEditMode]);
+
+    // Загружаем отели при изменении фильтров
+    useEffect(() => {
+        // Добавляем небольшую задержку для дебаунса при вводе текста
+        const timer = setTimeout(() => {
+            fetchHotel();
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [fetchHotel]);
+
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -51,7 +82,7 @@ export const CreateHotelModal: React.FC<CreateHotelModalProps> = ({
 
         setIsLoading(true);
         try {
-            await onCreate(formData);
+            await onSubmit(id, formData, isEditMode);
             handleClose();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Ошибка создания отеля');
@@ -70,7 +101,11 @@ export const CreateHotelModal: React.FC<CreateHotelModalProps> = ({
         <Modal show={show} onHide={handleClose} centered>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Добавить новый отель</Modal.Title>
+                    <Modal.Title>
+                        {isEditMode ? 'Обновить отель'
+                            : 'Добавить новый отель'
+                        }
+                    </Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
@@ -136,9 +171,9 @@ export const CreateHotelModal: React.FC<CreateHotelModalProps> = ({
                         {isLoading ? (
                             <>
                                 <Spinner size="sm" className="me-2" />
-                                Создание...
+                                {isEditMode ? 'Обновление' : 'Создание'}...
                             </>
-                        ) : 'Создать отель'}
+                        ) : isEditMode ? 'Обновить отель' : 'Создать отель'}
                     </Button>
                 </Modal.Footer>
             </Form>

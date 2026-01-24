@@ -1,4 +1,5 @@
-﻿using BookingSystem.Infrastructure.Entities;
+﻿using BookingSystem.Domain.Entities;
+using BookingSystem.Infrastructure.Entities;
 using BookingSystem.Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +49,13 @@ public class UsersController(UserManager<User> userManager,
             user = new User
             {
                 UserName = register.Login.Split("@")[0],
-                Email = register.Login
+                Email = register.Login,
+                Client = new Client
+                {
+                    Email = register.Login,
+                    FirstName = register.Login,
+                    LastName = register.Login
+                }
             };
 
             await _userManager.CreateAsync(user, register.Password);

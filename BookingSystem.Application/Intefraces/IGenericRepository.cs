@@ -1,12 +1,11 @@
 ﻿using BookingSystem.Domain.Abstractions;
-using BookingSystem.Domain.Entities;
 using System.Linq.Expressions;
 
 namespace BookingSystem.Application.Intefraces;
 
 public interface IGenericRepository<T> where T : EntityBase
 {
-    Task<int> CreateAsync(T entity, 
+    Task CreateAsync(T entity, 
         CancellationToken cancellationToken = default);
     void Delete(T entity);
     
@@ -14,6 +13,10 @@ public interface IGenericRepository<T> where T : EntityBase
     
     Task<TSelect> GetAsync<TSelect>(int id, 
         Expression<Func<T, TSelect>> select, 
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyCollection<TSelect>> GetAsync<TSelect>(Expression<Func<T, bool>> predicate,
+        Expression<Func<T, TSelect>> select,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyCollection<TSelect>> GetAsync<TSelect>(Expression<Func<T, TSelect>> select,

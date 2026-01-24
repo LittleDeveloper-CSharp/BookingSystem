@@ -10,5 +10,9 @@ public class Room : EntityBase
 
     public int MaxPerson { get; set; }
 
+    public int HotelId { get; set; }
+
+    public Hotel Hotel { get; set; } = null!;
+
     public ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
 }

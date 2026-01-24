@@ -56,7 +56,7 @@ public class HotelsController(
     {
         var id = await _hotelService.CreateHotelAsync(createHotel, cancellationToken);
 
-        return CreatedAtAction(nameof(Get), null, new { id });
+        return CreatedAtAction(nameof(Get), new { id }, new { id });
     }
 
     [HttpPut("{id:int}")]
