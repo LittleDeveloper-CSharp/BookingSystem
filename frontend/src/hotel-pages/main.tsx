@@ -122,14 +122,12 @@ function HotelGrid() {
 
             <h1 className="mb-4">Доступные отели</h1>
 
-            {/* Компонент фильтров */}
             <HotelFiltersContainer
                 filters={filters}
                 onFiltersChange={handleFiltersChange}
                 onReset={handleResetFilters}
             />
 
-            {/* Список отелей */}
             {hotels.length === 0 ? (
                 <Alert variant="warning">
                     <Alert.Heading>Отелей не найдено</Alert.Heading>

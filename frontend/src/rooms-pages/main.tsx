@@ -1,5 +1,4 @@
-/* eslint-disable no-debugger */
-import { Modal, Button, Form, Alert, Spinner, Row, Col, Card, Badge, Table } from 'react-bootstrap';
+import { Modal, Button, Form, Alert, Spinner, Row, Col, Badge, Table } from 'react-bootstrap';
 import { useState, useCallback, useEffect } from 'react';
 import { useRoleCheck } from '../hooks/useRoleCheck';
 import type { RoomCartDto } from './models/roomCartDto';
@@ -7,6 +6,7 @@ import type { RoomFilters } from './models/roomFilters';
 import type { RoomDetailsDto } from './models/roomDetailsDto';
 import type { UpdateRoomDto } from './models/updateRoomDto';
 import { useBookingClient, useRoomClient } from '../clients/useHttpClient';
+import RoomFiltersContainer from './flters';
 
 interface RoomsModalProps {
     hotelName: string;
@@ -59,7 +59,7 @@ export const RoomsModal: React.FC<RoomsModalProps> = ({
         } finally {
             setLoading(false);
         }
-    }, [httpClient, hotelId, filters]);
+    }, [httpClient, filters, hotelId]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -70,15 +70,8 @@ export const RoomsModal: React.FC<RoomsModalProps> = ({
     }, [fetchRooms]);
 
 
-    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
-
-        setFilters(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked :
-                type === 'number' ? (value ? Number(value) : undefined) :
-                    value || undefined
-        }));
+    const handleFiltersChange = (newFilters: RoomFilters) => {
+        setFilters({ ...newFilters });
     };
 
     const resetFilters = () => {
@@ -211,49 +204,12 @@ export const RoomsModal: React.FC<RoomsModalProps> = ({
                         </div>
                     </div>
 
-                    {showFilters && (
-                        <Card className="mb-4">
-                            <Card.Body>
-                                <Row>
-                                    <Col md={4}>
-                                        <Form.Group>
-                                            <Form.Label>Гостей от</Form.Label>
-                                            <Form.Control
-                                                type="number"
-                                                name="minGuests"
-                                                value={filters.minPerson || ''}
-                                                onChange={handleFilterChange}
-                                                min="1"
-                                            />
-                                        </Form.Group>
-                                    </Col>
-
-                                    <Col md={4}>
-                                        <Form.Group>
-                                            <Form.Label>Гостей до</Form.Label>
-                                            <Form.Control
-                                                type="number"
-                                                name="maxGuests"
-                                                value={filters.maxPerson || ''}
-                                                onChange={handleFilterChange}
-                                                min="1"
-                                            />
-                                        </Form.Group>
-                                    </Col>
-
-                                    <Col md={12} className="mt-3">
-                                        <Button
-                                            variant="outline-secondary"
-                                            size="sm"
-                                            onClick={resetFilters}
-                                        >
-                                            Сбросить фильтры
-                                        </Button>
-                                    </Col>
-                                </Row>
-                            </Card.Body>
-                        </Card>
-                    )}
+                    {showFilters &&
+                        <RoomFiltersContainer
+                            filters={filters}
+                            onFiltersChange={handleFiltersChange}
+                            onReset={resetFilters}
+                        />}
 
                     {loading ? (
                         <div className="text-center py-5">

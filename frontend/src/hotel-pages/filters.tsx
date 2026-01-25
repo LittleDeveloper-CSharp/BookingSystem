@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, InputGroup, Button, Row, Col, Card } from 'react-bootstrap';
-import type { HotelFiltersProps } from '../clients/models/hotelFiltersProps';
+import type { HotelFiltersProps } from './models/hotelFiltersProps';
 
 function HotelFiltersContainer(
     { filters,
@@ -65,7 +65,6 @@ function HotelFiltersContainer(
                         </Form.Group>
                     </Col>
 
-                    {/* Фильтр по количеству гостей */}
                     <Col md={6} lg={3} >
                         <Form.Group>
                             <Form.Label>Кол - во гостей от </Form.Label>
@@ -100,7 +99,6 @@ function HotelFiltersContainer(
                                 value={filters.sortBy || ''}
                                 onChange={handleSortChange}
                             >
-                                <option value="" > Без сортировки </option>
                                 < option value="name" > Названию </option>
                                 < option value="rooms" > Количеству гостей </option>
                             </Form.Select>
