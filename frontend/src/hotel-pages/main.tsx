@@ -12,7 +12,6 @@ import { RoomsModal } from '../rooms-pages/main';
 import { useHotelClient } from '../clients/useHttpClient';
 import type { HotelFilters } from './models/hotelFilters';
 
-// Дефолтные значения фильтров
 const DEFAULT_FILTERS: HotelFilters = {
     sortOrder: 'asc',
     sortBy: 'name'
@@ -113,7 +112,10 @@ function HotelGrid() {
                 {isAdmin && (
                     <Button
                         variant="success"
-                        onClick={() => setShowDetailsModal(true)}
+                        onClick={() => {
+                            setEditMode(false);
+                            return setShowDetailsModal(true);
+                        }}
                     >
                         + Добавить отель
                     </Button>
@@ -172,6 +174,7 @@ function HotelGrid() {
                 hotelName={hotelName}
                 show={showRoomsModal}
                 onHide={() => setShowRoomsModal(false)}
+                onUpdate={fetchHotels}
             />
         </Container>
     );

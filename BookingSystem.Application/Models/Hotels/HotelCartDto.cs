@@ -7,4 +7,6 @@ public sealed record HotelCartDto
     public required string Name { get; set; }
 
     public required int CountAvailableRooms { get; init; }
+
+    public required bool IsActive { get; init; }
 }

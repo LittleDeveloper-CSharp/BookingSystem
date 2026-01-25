@@ -47,6 +47,7 @@ const HotelCart : React.FC<HotelCartProps>  =(
                     {isAdmin && (
                         <Button
                             variant="danger"
+                            disabled={model.isActive}
                             onClick={() => onDeleteClick(model.id)}
                             className="w-100"
                         >

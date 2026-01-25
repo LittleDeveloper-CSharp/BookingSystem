@@ -1,4 +1,5 @@
-﻿using BookingSystem.Domain.Entities;
+﻿using BookingSystem.Domain.Abstractions;
+using BookingSystem.Domain.Entities;
 using BookingSystem.Infrastructure.Configurations;
 using BookingSystem.Infrastructure.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +23,19 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : Ident
         builder.ApplyConfiguration(new UserConfiguration());
         builder.ApplyConfiguration(new RoleConfiguration());
         builder.ApplyConfiguration(new UserRoleConfiguration());
+
+        builder.Entity<Hotel>()
+            .HasQueryFilter(x => !x.IsDeleted);
+
+        builder.Entity<Room>()
+            .HasQueryFilter(x => !x.IsDeleted);
+
+        builder.Entity<Booking>()
+            .HasQueryFilter(x => !x.IsDeleted);
+
+        builder.Entity<Client>()
+            .HasQueryFilter(x => !x.IsDeleted);
+
 
         base.OnModelCreating(builder);
     }

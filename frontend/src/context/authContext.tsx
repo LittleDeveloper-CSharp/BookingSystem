@@ -1,5 +1,4 @@
 /* eslint-disable no-debugger */
-// context/AuthContext.tsx
 import React, { createContext, useContext, useState, type ReactNode } from 'react';
 import type { User } from '../models/user';
 import UserHttpClient from '../clients/userHttpClient';
@@ -39,7 +38,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const login = async (email: string, password: string) => {
         setIsLoading(true);
         try {
-            // Запрос к API
             const response = await httpClient.login({
                 login: email,
                 password: password

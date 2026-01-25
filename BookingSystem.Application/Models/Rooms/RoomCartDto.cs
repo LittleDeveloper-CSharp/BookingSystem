@@ -9,4 +9,6 @@ public sealed record RoomCartDto
     public required string? Description { get; init; }
 
     public required int MaxPerson { get; init; }
+
+    public bool IsActive { get; init; }
 }

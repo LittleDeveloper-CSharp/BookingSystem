@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 import { Modal, Button, Form, Alert, Spinner, Row, Col, Badge, Table } from 'react-bootstrap';
 import { useState, useCallback, useEffect } from 'react';
 import { useRoleCheck } from '../hooks/useRoleCheck';
@@ -13,6 +14,7 @@ interface RoomsModalProps {
     hotelId: number;
     show: boolean;
     onHide: () => void;
+    onUpdate: () => Promise<void>;
 }
 
 const DEFAULT_FILTERS: RoomFilters = {
@@ -31,6 +33,7 @@ export const RoomsModal: React.FC<RoomsModalProps> = ({
     hotelId,
     show,
     onHide,
+    onUpdate
 }) => {
     const { isAdmin, isClient } = useRoleCheck();
     const [rooms, setRooms] = useState<RoomCartDto[]>([]);
@@ -67,7 +70,7 @@ export const RoomsModal: React.FC<RoomsModalProps> = ({
         }, 300);
 
         return () => clearTimeout(timer);
-    }, [fetchRooms]);
+    }, [fetchRooms, show]);
 
 
     const handleFiltersChange = (newFilters: RoomFilters) => {
@@ -107,6 +110,7 @@ export const RoomsModal: React.FC<RoomsModalProps> = ({
             setShowRoomModal(false);
             setRoomFormData(DEFAULT_ROOM_DETAILS);
             await fetchRooms();
+            await onUpdate();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Ошибка сохранения');
         }
@@ -116,6 +120,7 @@ export const RoomsModal: React.FC<RoomsModalProps> = ({
         try {
             await httpClient.deleteRoom(roomId);
             await fetchRooms();
+            await onUpdate();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Ошибка удаления');
         }
@@ -137,6 +142,9 @@ export const RoomsModal: React.FC<RoomsModalProps> = ({
             startDate: dateTime,
             endDate: dateTime
         });
+
+        await onUpdate();
+        await fetchRooms();
     }
 
     return (
@@ -251,6 +259,7 @@ export const RoomsModal: React.FC<RoomsModalProps> = ({
                                                         (<Button
                                                             variant="outline-primary"
                                                             size="sm"
+                                                            disabled={!room.isActive}
                                                             title="Забронировать"
                                                             onClick={() => bookingRoom(room)}
                                                         >
@@ -272,6 +281,7 @@ export const RoomsModal: React.FC<RoomsModalProps> = ({
                                                                 variant="outline-danger"
                                                                 size="sm"
                                                                 onClick={() => handleDeleteRoom(room.id)}
+                                                                disabled={!room.isActive}
                                                                 title="Удалить"
                                                             >
                                                                 <i className="bi bi-trash"></i>
@@ -342,7 +352,6 @@ export const RoomsModal: React.FC<RoomsModalProps> = ({
                                     <Form.Control
                                         type="number"
                                         min="1"
-                                        max="10"
                                         value={roomFormData.maxPerson}
                                         onChange={(e) => setRoomFormData({
                                             ...roomFormData,

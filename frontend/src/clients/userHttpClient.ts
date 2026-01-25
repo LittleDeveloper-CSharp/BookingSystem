@@ -1,4 +1,3 @@
-/* eslint-disable no-debugger */
 import { jwtDecode } from 'jwt-decode';
 import type { User } from "../models/user";
 import type { HttpClientOptions } from "./models/httpClientOptions";

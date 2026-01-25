@@ -3,4 +3,5 @@ export interface RoomCartDto {
     name: string;
     description?: string;
     maxPerson: number;
+    isActive: boolean
 }

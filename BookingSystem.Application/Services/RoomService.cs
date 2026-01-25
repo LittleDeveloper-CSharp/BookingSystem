@@ -68,6 +68,7 @@ internal sealed class RoomService(IUnifOfWork unifOfWork) : IRoomService
                 Id = x.Id,
                 MaxPerson = x.MaxPerson,
                 Name = x.Name,
+                IsActive = !x.Bookings.Any()
             },
             roomFilterSorting,
             cancellationToken);

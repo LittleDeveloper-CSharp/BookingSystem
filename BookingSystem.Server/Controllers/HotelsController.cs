@@ -95,11 +95,13 @@ public class HotelsController(
             SortingType = null
         };
 
-        var report = await _reportService.GetReportAsync(x => new HotelStatisticDto
-        {
-            CountBooking = x.Rooms.Count,
-            Name = x.Name
-        }, filter, cancellationToken);
+        var report = await _reportService.GetReportAsync(
+            ["Наименование", "Количество свободных комнат"],
+            x => new HotelStatisticDto
+            {
+                CountBooking = x.Rooms.Count(x => x.Bookings.Count != 0),
+                Name = x.Name
+            }, filter, cancellationToken);
 
         return File(report, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Report.xlsx");
     }

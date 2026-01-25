@@ -19,7 +19,9 @@ internal sealed class GenericRepository<T>(AppDbContext appDbContext) : IGeneric
 
     public void Delete(T entity)
     {
-        _set.Remove(entity);
+        entity.IsDeleted = true;
+
+        Update(entity);
     }
 
     public async Task<T> GetAsync(int id, CancellationToken cancellationToken = default)

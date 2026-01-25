@@ -99,11 +99,13 @@ public class RoomsController(IRoomService roomService, IReportService<RoomStatis
             SortingType = null
         };
 
-        var report = await _reportService.GetReportAsync(x => new RoomStatisticDto
-        {
-            CountBooking = x.Bookings.Count,
-            Name = x.Name
-        }, filter, cancellationToken);
+        var report = await _reportService.GetReportAsync(
+            ["Наименование", "Количество бронирований"],
+            x => new RoomStatisticDto
+            {
+                CountBooking = x.Bookings.Count,
+                Name = x.Name
+            }, filter, cancellationToken);
 
         return File(report, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Report.xlsx");
     }

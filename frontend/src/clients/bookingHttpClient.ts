@@ -1,4 +1,3 @@
-/* eslint-disable no-debugger */
 import type { BookingCartDto } from "../booking-pages/models/bookingCartDto";
 import type { CreateBookingDto } from "../booking-pages/models/createBookingDto";
 import type { HttpClientOptions } from "./models/httpClientOptions";

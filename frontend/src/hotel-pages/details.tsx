@@ -40,9 +40,7 @@ export const DetailsHotelModal: React.FC<DetailsHotelModalProps> = ({
         }
     }, [httpClient, id, isEditMode]);
 
-    // Загружаем отели при изменении фильтров
     useEffect(() => {
-        // Добавляем небольшую задержку для дебаунса при вводе текста
         const timer = setTimeout(() => {
             fetchHotel();
         }, 300);
@@ -59,14 +57,13 @@ export const DetailsHotelModal: React.FC<DetailsHotelModalProps> = ({
             ...prev,
             [name]: value
         }));
-        setError(''); // Сбрасываем ошибку при изменении
+        setError('');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
-        // Простая валидация
         if (!formData.name.trim()) {
             setError('Название обязательно');
             return;

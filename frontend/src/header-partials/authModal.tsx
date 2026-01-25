@@ -26,7 +26,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onHide }) => {
         e.preventDefault();
         setError('');
 
-        // Валидация
         if (!loginData.email || !loginData.password) {
             setError('Пожалуйста заполните все поля');
             return;

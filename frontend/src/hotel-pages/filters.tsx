@@ -40,7 +40,6 @@ function HotelFiltersContainer(
             </Card.Header>
             < Card.Body >
                 <Row className="g-3" >
-                    {/* Фильтр по названию */}
                     < Col md={12} lg={4} >
                         <Form.Group>
                             <Form.Label>Название отеля </Form.Label>
@@ -91,7 +90,6 @@ function HotelFiltersContainer(
                         </Form.Group>
                     </Col>
 
-                    {/* Сортировка */}
                     <Col md={6} lg={6} >
                         <Form.Group>
                             <Form.Label>Сортировать по </Form.Label>

@@ -1,10 +1,10 @@
 import type { HttpClientOptions } from "./models/httpClientOptions";
 import { downloadFile } from "../modules/report-saver";
-import type { HotelFilters } from "./models/hotelFilters";
 import type { CreateHotelDto } from "../hotel-pages/models/createHotelDto";
 import type { HotelCartDto } from "../hotel-pages/models/hotelCartDto";
 import type { HotelDetailsDto } from "../hotel-pages/models/hotelDetailsDto";
 import type { UpdateHotelDto } from "../hotel-pages/models/updateHotelDto";
+import type { HotelFilters } from "../hotel-pages/models/hotelFilters";
 
 export default class HotelHttpClient {
     _headers: HeadersInit;
@@ -74,7 +74,7 @@ export default class HotelHttpClient {
                 method: 'POST',
                 headers: this._headers,
                 body: JSON.stringify(model),
-                mode: 'cors', // Добавь это!
+                mode: 'cors',
                 credentials: 'omit'
             });
 

@@ -65,7 +65,6 @@ const MyBookingsPage: React.FC = () => {
         <Container className="py-4">
             <h1 className="mb-4">Мои бронирования</h1>
 
-            {/* Статистика */}
             <Card className="mb-4">
                 <Card.Body>
                     <Row>

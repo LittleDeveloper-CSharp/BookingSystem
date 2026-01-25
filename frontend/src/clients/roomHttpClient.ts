@@ -92,7 +92,7 @@ export default class RoomHttpClient {
 
     async updateRoom(id: number, model: UpdateRoomDto) {
         try {
-            const response = await fetch(`${this._url}${this._resourceName}${id}`, {
+            const response = await fetch(`${this._url}${this._resourceName}/${id}`, {
                 method: 'PUT',
                 headers: this._headers,
                 body: JSON.stringify(model)

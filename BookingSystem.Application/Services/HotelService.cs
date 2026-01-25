@@ -43,7 +43,8 @@ internal sealed class HotelService(IUnifOfWork unifOfWork) : IHotelService
         var response = await _genericRepository.GetAsync(
             x => new HotelCartDto
             {
-                CountAvailableRooms = x.Rooms.Count,
+                CountAvailableRooms = x.Rooms.Count(x => x.Bookings.Count == 0),
+                IsActive = x.Rooms.Any(x => x.Bookings.Count > 0),
                 Id = x.Id,
                 Name = x.Name
             },
